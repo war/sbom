@@ -7,7 +7,7 @@
 
 ### Background Processing
 - **Asynq**
-- 
+
 ### Core API Service
 - **Language:** Go
 - **Framework:** Gin
