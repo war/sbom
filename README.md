@@ -1,5 +1,19 @@
 # SBOM Management System Technical Architecture
 
+## Usage
+### 1. .env.example
+Use the .env.example to create your own .env file.
+### 2. Running the application
+Use docker compose up to run everything
+```
+docker compose up
+```
+Or run and test individual services.
+```
+docker compose up api
+```
+The names of the services can be found in docker-compose.yaml
+
 ## Backend Architecture
 ### Data Storage
 - **Primary Database:** PostgreSQL
