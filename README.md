@@ -13,6 +13,11 @@ Or run and test individual services.
 docker compose up api
 ```
 The names of the services can be found in docker-compose.yaml
+### 3. Health checker
+Run the health checker to make sure that the services that you want are online and available.
+```
+./scripts/health-check.ps1
+```
 
 ## Backend Architecture
 ### Data Storage
