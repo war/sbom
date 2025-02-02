@@ -1,0 +1,112 @@
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: docker/postgres/Dockerfile
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - sbom_network
+
+  elasticsearch:
+    build:
+      context: ./docker/elasticsearch
+      dockerfile: Dockerfile
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - bootstrap.memory_lock=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "${ELASTICSEARCH_PORT}:9200"
+      - "${ELASTICSEARCH_NODE_PORT}:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - sbom_network
+
+  minio:
+    build:
+      context: .
+      dockerfile: docker/minio/Dockerfile
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "${MINIO_PORT}:9000"
+      - "${MINIO_CONSOLE_PORT}:9001"
+    volumes:
+      - minio_data:/data
+    networks:
+      - sbom_network
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    ports:
+      - "${API_PORT}:8080"
+    volumes:
+      - ./api:/app/src
+    depends_on:
+      - postgres
+      - elasticsearch
+      - minio
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRES_USER}
+      - DB_PASSWORD=${POSTGRES_PASSWORD}
+      - DB_NAME=${POSTGRES_DB}
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - MINIO_ENDPOINT=minio:9000
+    networks:
+      - sbom_network
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    ports:
+      - "${WEB_PORT}:3000"
+    volumes:
+      - ./web:/app/src
+    depends_on:
+      - api
+    environment:
+      - API_URL=http://api:8080
+    networks:
+      - sbom_network
+
+  parser:
+    build:
+      context: .
+      dockerfile: docker/parser/Dockerfile
+    ports:
+      - "${PARSER_PORT}:8081"
+    volumes:
+      - ./parser:/app/src
+    depends_on:
+      - api
+    environment:
+      - API_URL=http://api:8080
+    networks:
+      - sbom_network
+
+networks:
+  sbom_network:
+    name: ${DOCKER_NETWORK_NAME}
+
+volumes:
+  postgres_data:
+  elasticsearch_data:
+  minio_data:
