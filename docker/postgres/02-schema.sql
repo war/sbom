@@ -79,7 +79,7 @@ CREATE TABLE vulnerabilities (
 );
 
 CREATE TABLE audit_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     user_id UUID REFERENCES users(id),
     entity_type VARCHAR(50) NOT NULL, -- e.g., 'sbom', 'component'
     entity_id UUID NOT NULL,
