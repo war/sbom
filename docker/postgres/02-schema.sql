@@ -8,23 +8,23 @@ CREATE TABLE users (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE organizations (
+CREATE TABLE organisations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE user_organizations (
+CREATE TABLE user_organisations (
     user_id UUID REFERENCES users(id),
-    organization_id UUID REFERENCES organizations(id),
+    organisation_id UUID REFERENCES organisations(id),
     role VARCHAR(50) NOT NULL DEFAULT 'member',
-    PRIMARY KEY (user_id, organization_id)
+    PRIMARY KEY (user_id, organisation_id)
 );
 
 CREATE TABLE projects (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    organization_id UUID REFERENCES organizations(id),
+    organisation_id UUID REFERENCES organisations(id),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -110,8 +110,8 @@ CREATE TRIGGER update_users_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER update_organizations_updated_at
-    BEFORE UPDATE ON organizations
+CREATE TRIGGER update_organisations_updated_at
+    BEFORE UPDATE ON organisations
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
