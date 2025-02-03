@@ -89,7 +89,7 @@ CREATE TABLE audit_logs (
 );
 
 CREATE INDEX idx_components_sbom_id ON components(sbom_id);
-CREATE INDEX idx_components_purl ON components(purl);
+CREATE INDEX idx_components_package_url ON components(package_url);
 CREATE INDEX idx_components_name_version ON components(name, version);
 CREATE INDEX idx_dependencies_sbom_id ON dependencies(sbom_id);
 CREATE INDEX idx_vulnerabilities_component_id ON vulnerabilities(component_id);
